@@ -15,7 +15,7 @@ export default function Home() {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setError] = useState("");
-  const [dynamicUrl, setDynamicUrl] = useState("");
+  const [results, setResults] = useState([]);
   const [loginType, setLoginType] = useState("OTP");
   const [pwd, setPwd] = useState("");
   const [downloading, setDownloading] = useState(false);
@@ -32,47 +32,23 @@ export default function Home() {
 
   useEffect(() => {
     if (theUser !== null) {
-
-      // var myHeaders = new Headers();
-      // myHeaders.append("Authorization", "Bearer 53d037668d748648c12097863c2321ea61be9de0");
-      // myHeaders.append("Content-Type", "application/json");
-      // console.log('mko');
-      // console.log(process.env.REACT_APP_M3U_FUNCTION_BASE_URL);
-      // var raw = JSON.stringify({
-      //   "long_url": window.location.origin.replace('localhost', '127.0.0.1') + '/api/getM3u?sid=' + theUser.sid + '_' + theUser.acStatus[0] + '&id=' + theUser.id + '&sname=' + theUser.sName + '&tkn=' + token + '&ent=' + theUser.entitlements.map(x => x.pkgId).join('_')
-      // });
-
-      // var requestOptions = {
-      //   method: 'POST',
-      //   headers: myHeaders,
-      //   body: raw,
-      //   redirect: 'follow'
-      // };
-
-      // fetch("https://api-ssl.bitly.com/v4/shorten", requestOptions)
-      //   .then(response => response.text())
-      //   .then(result => {
-      //     console.log(result);
-      //     setDynamicUrl(JSON.parse(result).link);
-      //   })
-      //   .catch(error => console.log('error', error));
-
-      if (window.location.origin.indexOf('localhost') === -1) {
-        fetch("/api/shortenUrl", { method: 'POST', body: JSON.stringify({ longUrl: window.location.origin + '/api/getM3u?sid=' + theUser.sid + '_' + theUser.acStatus[0] + '&id=' + theUser.id + '&sname=' + theUser.sName + '&tkn=' + token + '&ent=' + theUser.entitlements.map(x => x.pkgId).join('_') }) })
-          .then(response => response.json())
-          .then(result => {
-            console.log(result);
-            const mydiv = document.createElement('div');
-            mydiv.innerHTML = result.data;
-            setDynamicUrl(mydiv.querySelector('#shortenurl').value);
-          })
-          .catch(error => console.log('error', error));
-      }
-      else
-        setDynamicUrl('');
+      fetch('/api/shorten', {
+        method: 'POST',
+        body: window.location.origin + '/api/getM3u?sid=' + theUser.sid + '_' + theUser.acStatus[0] + '&id=' + theUser.id + '&sname=' + theUser.sName + '&tkn=' + token + '&ent=' + theUser.entitlements.map(x => x.pkgId).join('_')
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log(data[0].key);
+          setResults(data[0].key)
+          setLoading(false)
+        })
+        .catch(err => {
+          console.error(err)
+          setLoading(false)
+        })
     }
     else
-      setDynamicUrl("");
+      setResults("");
   }, [theUser, token])
 
   const getOTP = () => {
@@ -113,9 +89,10 @@ export default function Home() {
           localStorage.setItem("token", token);
           setError("");
         }
-        else
+        else {
           setError(res.message);
-        setLoading(false);
+          setLoading(false);
+        }
       })
       .catch(error => {
         console.log('error', error);
@@ -255,31 +232,21 @@ export default function Home() {
                     <Header as="h1">Welcome, {theUser.sName}</Header>
                     {
                       theUser !== null ?
-                        dynamicUrl !== "" ?
-                          <Message>
-                            <Message.Header>Dynamic URL to get m3u: </Message.Header>
-                            {/* <Image centered src={'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(m3uMeta.url)} size='small' /> */}
-                            <p>
-                              <a href={dynamicUrl}>{dynamicUrl}</a>
-                            </p>
-                            <p>
-                              You can use the above m3u URL in OTT Navigator or Tivimate app to watch all your subscribed channels.
-                            </p>
-                            <p>
-                              The generated m3u URL is for permanent use and is not required to be refreshed every 24 hours. Enjoy!
-                            </p>
-                          </Message>
-                          :
-                          <Message>
-                            <Message.Header>You cannot generate a permanent m3u file URL on localhost but you can download your m3u file: </Message.Header>
-                            <p></p>
-                            <p>
-                              <Button loading={downloading} primary onClick={() => downloadM3uFile('ts.m3u')}>Download m3u file</Button>
-                            </p>
-                            <p>The downloaded m3u file will be valid only for 24 hours.</p>
-                          </Message>
+                        <Message>
+                          <Message.Header>Dynamic URL to get m3u: </Message.Header>
+                          {/* <Image centered src={'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(m3uMeta.url)} size='small' /> */}
+                          <p>
+                            <a href={`/${results}`}>{`${window.location.origin}`}/{`${results}`}</a>
+                          </p>
+                          <p>
+                            You can use the above m3u URL in OTT Navigator or Tivimate app to watch all your subscribed channels.
+                          </p>
+                          <p>
+                            The generated m3u URL is for permanent use and is not required to be refreshed every 24 hours. Enjoy!
+                          </p>
+                        </Message>
                         :
-                        <Header as='h3' style={{ color: 'red' }}>Your Tata Sky Connection is deactivated.</Header>
+                        <Header as='h3' style={{ color: 'red' }}>Something went wrong. Please try again later.</Header>
                     }
 
                     <Button negative onClick={logout}>Logout</Button>
