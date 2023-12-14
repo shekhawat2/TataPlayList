@@ -175,50 +175,26 @@ export default function Home() {
                             onChange={(e, { value }) => { setLoginType(value); }}
                           />
                         </Form.Field>
-                        <Form.Field>
-                          <Radio
-                            label='Password'
-                            name='loginTypeRadio'
-                            value='PWD'
-                            checked={loginType === 'PWD'}
-                            onChange={(e, { value }) => { setLoginType(value); }}
-                          />
-                        </Form.Field>
                       </Form.Group>
 
-                      {
-                        loginType === 'OTP' ?
-                          <>
-                            <Form.Field disabled={otpSent}>
-                              <label>RMN</label>
-                              <input value={rmn} placeholder='Registered Mobile Number' onChange={(e) => setRmn(e.currentTarget.value)} />
-                            </Form.Field>
-                            <Form.Field disabled={otpSent}>
-                              <label>Subscriber ID</label>
-                              <input value={sid} placeholder='Subscriber ID' onChange={(e) => setSid(e.currentTarget.value)} />
-                            </Form.Field>
-                            <Form.Field disabled={!otpSent}>
-                              <label>OTP</label>
-                              <input value={otp} placeholder='OTP' onChange={(e) => setOtp(e.currentTarget.value)} />
-                            </Form.Field>
-                            {
-                              otpSent ? <Button primary onClick={authenticateUser}>Login</Button> :
-                                <Button primary onClick={getOTP}>Get OTP</Button>
-                            }
-                          </>
-                          :
-                          <>
-                            <Form.Field>
-                              <label>Subscriber ID</label>
-                              <input value={sid} placeholder='Subscriber ID' onChange={(e) => setSid(e.currentTarget.value)} />
-                            </Form.Field>
-                            <Form.Field>
-                              <label>Password</label>
-                              <input type='password' value={pwd} placeholder='Password' onChange={(e) => setPwd(e.currentTarget.value)} />
-                            </Form.Field>
-                            <Button primary onClick={authenticateUser}>Login</Button>
-                          </>
-                      }
+                      <>
+                        <Form.Field disabled={otpSent}>
+                          <label>RMN</label>
+                          <input value={rmn} placeholder='Registered Mobile Number' onChange={(e) => setRmn(e.currentTarget.value)} />
+                        </Form.Field>
+                        <Form.Field disabled={otpSent}>
+                          <label>Subscriber ID</label>
+                          <input value={sid} placeholder='Subscriber ID' onChange={(e) => setSid(e.currentTarget.value)} />
+                        </Form.Field>
+                        <Form.Field disabled={!otpSent}>
+                          <label>OTP</label>
+                          <input value={otp} placeholder='OTP' onChange={(e) => setOtp(e.currentTarget.value)} />
+                        </Form.Field>
+                        {
+                          otpSent ? <Button primary onClick={authenticateUser}>Login</Button> :
+                            <Button primary onClick={getOTP}>Get OTP</Button>
+                        }
+                      </>
 
                     </Form>
                   </Segment>
