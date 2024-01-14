@@ -20,6 +20,8 @@ export default async function handler(req, res) {
 
 
 import fetch, { Headers } from "cross-fetch";
+import { replacestrings } from './stringreplace';
+const { filterChannels } = require('./channelFilter');
 // const baseUrl = "https://kong-tatasky.videoready.tv";
 const baseUrl = "https://tm.tapi.videoready.tv";
 
@@ -56,7 +58,7 @@ const getJWT = async (params, uDetails) => {
         'kp': 'false',
         'locale': 'ENG',
         'origin': 'https://watch.tataplay.com',
-        'platform': 'web',
+        'platform': 'mobile',
         'profileid': uDetails.id,
         'referer': 'https://watch.tataplay.com/',
         'sec-fetch-dest': 'empty',
@@ -112,7 +114,7 @@ const getUserChanDetails = async (userChannels) => {
     myHeaders.append("device_details", "{\"pl\":\"web\",\"os\":\"Linux\",\"lo\":\"en-us\",\"app\":\"1.36.35\",\"dn\":\"PC\",\"bv\":101,\"bn\":\"CHROME\",\"device_id\":\"b70f9d50a3ea9cc7b77d4f1e04c41706\",\"device_type\":\"WEB\",\"device_platform\":\"PC\",\"device_category\":\"open\",\"manufacturer\":\"Linux_CHROME_101\",\"model\":\"PC\",\"sname\":\"\"}");
     myHeaders.append("locale", "ENG");
     myHeaders.append("origin", "https://watch.tataplay.com");
-    // myHeaders.append("platform", "web");
+    myHeaders.append("platform", "mobile");
     myHeaders.append("referer", "https://watch.tataplay.com/");
     myHeaders.append("sec-fetch-dest", "empty");
     myHeaders.append("sec-fetch-mode", "cors");
@@ -165,13 +167,13 @@ const generateM3u = async (ud) => {
         errs.push(allChans.err);
     if (errs.length === 0) {
         let userChanDetails = await getUserChanDetails(userChans);
+        userChanDetails.list = filterChannels(userChanDetails.list);
         let m3uStr = '';
         if (userChanDetails.err === null) {
             let chansList = userChanDetails.list;
             //console.log(chansList);
             let jwtTokens = [];
             if (chansList.length > 0) {
-                //m3uStr = '#EXTM3U    x-tvg-url="http://botallen.live/epg.xml.gz"\n\n';4
                 m3uStr = '#EXTM3U    x-tvg-url="https://www.tsepg.cf/epg.xml.gz"\n\n';
                 for (let i = 0; i < chansList.length; i++) {
                     const chanEnts = chansList[i].detail.entitlements.filter(val => ent.includes(val));
@@ -189,12 +191,15 @@ const generateM3u = async (ud) => {
                             });
                         }
                         m3uStr += '#EXTINF:-1  tvg-id=\"' + chansList[i].channelMeta.id.toString() + '\"  ';
-                        m3uStr += 'tvg-logo=\"' + chansList[i].channelMeta.logo + '\"   ';
+                        //m3uStr += 'tvg-logo=\"' + chansList[i].channelMeta.logo + '\"   ';
                         m3uStr += 'group-title=\"' + (chansList[i].channelMeta.genre[0] !== "HD" ? chansList[i].channelMeta.genre[0] : chansList[i].channelMeta.genre[1]) + '\",   ' + chansList[i].channelMeta.channelName + '\n';
                         m3uStr += '#KODIPROP:inputstream.adaptive.license_type=com.widevine.alpha' + '\n';
                         m3uStr += '#KODIPROP:inputstream.adaptive.license_key=' + chansList[i].detail.dashWidewineLicenseUrl + '&ls_session=';
                         m3uStr += chanJwt + '\n';
-                        m3uStr += chansList[i].detail.dashWidewinePlayUrl + '\n\n';
+                        //m3uStr += chansList[i].detail.dashWidewinePlayUrl + '\n\n';
+                        const playUrl = replacestrings(chansList[i].detail.dashWidewinePlayUrl);
+                        m3uStr += playUrl + '\n\n';
+
                     }
                 }
                 console.log('all done!');
