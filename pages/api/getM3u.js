@@ -33,7 +33,7 @@ const getAllChans = async () => {
     let err = null;
     let res = null;
 
-    await fetch("https://ts-api.videoready.tv/content-detail/pub/api/v1/channels?limit=599", requestOptions)
+    await fetch("https://ts-api.videoready.tv/content-detail/pub/api/v1/channels?limit=999", requestOptions)
         .then(response => response.text())
         .then(result => res = JSON.parse(result))
         .then(r => r)
@@ -174,7 +174,7 @@ const generateM3u = async (ud) => {
             //console.log(chansList);
             let jwtTokens = [];
             if (chansList.length > 0) {
-                m3uStr = '#EXTM3U    x-tvg-url="https://www.tsepg.cf/epg.xml.gz"\n\n';
+                m3uStr = '#EXTM3U x-tvg-url="https://www.tsepg.cf/epg.xml.gz"\n\n';
                 for (let i = 0; i < chansList.length; i++) {
                     const chanEnts = chansList[i].detail.entitlements.filter(val => ent.includes(val));
                     if (chanEnts.length > 0) {
