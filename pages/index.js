@@ -32,32 +32,31 @@ export default function Home() {
 
   useEffect(() => {
     if (theUser !== null) {
-      if (theUser.acStatus !== "DEACTIVATED") {
-        // var myHeaders = new Headers();
-        // myHeaders.append("Authorization", "Bearer 53d037668d748648c12097863c2321ea61be9de0");
-        // myHeaders.append("Content-Type", "application/json");
-        // console.log('mko');
-        // console.log(process.env.REACT_APP_M3U_FUNCTION_BASE_URL);
-        // var raw = JSON.stringify({
-        //   "long_url": window.location.origin.replace('localhost', '127.0.0.1') + '/api/getM3u?sid=' + theUser.sid + '_' + theUser.acStatus[0] + '&id=' + theUser.id + '&sname=' + theUser.sName + '&tkn=' + token + '&ent=' + theUser.entitlements.map(x => x.pkgId).join('_')
-        // });
+      // var myHeaders = new Headers();
+      // myHeaders.append("Authorization", "Bearer 53d037668d748648c12097863c2321ea61be9de0");
+      // myHeaders.append("Content-Type", "application/json");
+      // console.log('mko');
+      // console.log(process.env.REACT_APP_M3U_FUNCTION_BASE_URL);
+      // var raw = JSON.stringify({
+      //   "long_url": window.location.origin.replace('localhost', '127.0.0.1') + '/api/getM3u?sid=' + theUser.sid + '_' + theUser.acStatus[0] + '&id=' + theUser.id + '&sname=' + theUser.sName + '&tkn=' + token + '&ent=' + theUser.entitlements.map(x => x.pkgId).join('_')
+      // });
 
-        // var requestOptions = {
-        //   method: 'POST',
-        //   headers: myHeaders,
-        //   body: raw,
-        //   redirect: 'follow'
-        // };
+      // var requestOptions = {
+      //   method: 'POST',
+      //   headers: myHeaders,
+      //   body: raw,
+      //   redirect: 'follow'
+      // };
 
-        // fetch("https://api-ssl.bitly.com/v4/shorten", requestOptions)
-        //   .then(response => response.text())
-        //   .then(result => {
-        //     console.log(result);
-        //     setDynamicUrl(JSON.parse(result).link);
-        //   })
-        //   .catch(error => console.log('error', error));
+      // fetch("https://api-ssl.bitly.com/v4/shorten", requestOptions)
+      //   .then(response => response.text())
+      //   .then(result => {
+      //     console.log(result);
+      //     setDynamicUrl(JSON.parse(result).link);
+      //   })
+      //   .catch(error => console.log('error', error));
 
-        if (window.location.origin.indexOf('localhost') === -1) {
+      if (window.location.origin.indexOf('localhost') === -1) {
         const apiUrl = '/api/getM3u';
         const queryParams = new URLSearchParams({
           sid: `${theUser.sid}_${theUser.acStatus[0]}`,
@@ -71,14 +70,10 @@ export default function Home() {
 
         setDynamicUrl(longUrl);
       } else {
-        setDynamicUrl('');
-        console.log(window.location.origin.replace('localhost', '127.0.0.1') + '/api/getM3u?sid=' + theUser.sid + '_' + theUser.acStatus[0] + '&id=' + theUser.id + '&sname=' + theUser.sName + '&tkn=' + token + '&ent=' + theUser.entitlements.map(x => x.pkgId).join('_'));
+        setDynamicUrl("");
       }
-    } else {
-      setDynamicUrl("");
     }
-  }
-}, [theUser, token]);
+  }, [theUser, token]);
 
 
 
@@ -194,22 +189,22 @@ export default function Home() {
                   <Segment loading={loading}>
                     <Header as={'h1'}>Generate Tata Play IPTV (m3u) playlist</Header>
                     <Form>
-                            <Form.Field disabled={otpSent}>
-                              <label>RMN</label>
-                              <input value={rmn} placeholder='Registered Mobile Number' onChange={(e) => setRmn(e.currentTarget.value)} />
-                            </Form.Field>
-                            <Form.Field disabled={otpSent}>
-                              <label>Subscriber ID</label>
-                              <input value={sid} placeholder='Subscriber ID' onChange={(e) => setSid(e.currentTarget.value)} />
-                            </Form.Field>
-                            <Form.Field disabled={!otpSent}>
-                              <label>OTP</label>
-                              <input value={otp} placeholder='OTP' onChange={(e) => setOtp(e.currentTarget.value)} />
-                            </Form.Field>
-                            {
-                              otpSent ? <Button primary onClick={authenticateUser}>Login</Button> :
-                                <Button primary onClick={getOTP}>Get OTP</Button>
-                            }
+                      <Form.Field disabled={otpSent}>
+                        <label>RMN</label>
+                        <input value={rmn} placeholder='Registered Mobile Number' onChange={(e) => setRmn(e.currentTarget.value)} />
+                      </Form.Field>
+                      <Form.Field disabled={otpSent}>
+                        <label>Subscriber ID</label>
+                        <input value={sid} placeholder='Subscriber ID' onChange={(e) => setSid(e.currentTarget.value)} />
+                      </Form.Field>
+                      <Form.Field disabled={!otpSent}>
+                        <label>OTP</label>
+                        <input value={otp} placeholder='OTP' onChange={(e) => setOtp(e.currentTarget.value)} />
+                      </Form.Field>
+                      {
+                        otpSent ? <Button primary onClick={authenticateUser}>Login</Button> :
+                          <Button primary onClick={getOTP}>Get OTP</Button>
+                      }
                     </Form>
                   </Segment>
                 </Grid.Column>
@@ -221,15 +216,15 @@ export default function Home() {
                   <Segment loading={loading}>
                     <Header as="h1">Welcome, {theUser.sName}</Header>
                     {
-                      theUser !== null && theUser.acStatus !== "DEACTIVATED" ?
+                      theUser !== null ?
                         dynamicUrl !== "" ?
                           <Message>
                             <Message.Header>Dynamic URL to get m3u: </Message.Header>
                             <img src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(dynamicUrl)}&size=small`} alt="QR Code" />
                             <p>
-                            <div style={{ wordBreak: 'break-all' }}>
-                              <a href={dynamicUrl}>{dynamicUrl}</a>
-                            </div>
+                              <div style={{ wordBreak: 'break-all' }}>
+                                <a href={dynamicUrl}>{dynamicUrl}</a>
+                              </div>
                             </p>
                             <p>
                               You can use the above m3u URL in OTT Navigator or Tivimate app to watch all your subscribed channels.
@@ -243,7 +238,7 @@ export default function Home() {
                             <Message.Header>You cannot generate a permanent m3u file URL on localhost but you can download your m3u file: </Message.Header>
                             <p></p>
                             <p>
-                            <Button loading={downloading} primary onClick={() => downloadM3uFile('ts.m3u')}>Download m3u file</Button>
+                              <Button loading={downloading} primary onClick={() => downloadM3uFile('ts.m3u')}>Download m3u file</Button>
                             </p>
                             <p>The downloaded m3u file will be valid only for 24 hours.</p>
                           </Message>

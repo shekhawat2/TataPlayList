@@ -10,12 +10,8 @@ export default async function handler(req, res) {
         ent: req.query.ent.split('_'),
         tsActive: req.query.sid.split('_')[1] === "D" ? false : true
     };
-    if (uData.tsActive) {
-        let m3uString = await generateM3u(uData);
-        res.status(200).send(m3uString);
-    }
-    else
-        res.status(409).json({ error: "Tata Sky Deactivated" });
+    let m3uString = await generateM3u(uData);
+    res.status(200).send(m3uString);
 }
 
 
@@ -92,7 +88,7 @@ const getJWT = async (params, uDetails) => {
         // Promise.all(params.epids.map(x => { return { action: "stream", epids: [ {  } ] } }))
         const response = await fetch(baseUrl + "/auth-service/v1/oauth/token-service/token", requestOptions);
         result = await response.json();
-        if(result?.message.toLowerCase().indexOf("API Rate Limit Exceeded".toLowerCase()) > -1)
+        if (result?.message.toLowerCase().indexOf("API Rate Limit Exceeded".toLowerCase()) > -1)
             // throw new Error(result.message)
             // return Promise.reject(new Error(result.message + 'nooooooo'));
             return { retry: true };
