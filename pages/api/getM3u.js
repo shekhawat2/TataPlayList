@@ -204,7 +204,9 @@ const generateM3u = async (ud) => {
                         m3uStr += '#KODIPROP:inputstream.adaptive.license_key=' + chansList[i].detail.dashWidewineLicenseUrl + '&ls_session=';
                         m3uStr += chanJwt + '\n';
                         //m3uStr += chansList[i].detail.dashWidewinePlayUrl + '\n\n';
-                        const playUrl = replacestrings(chansList[i].detail.dashWidewinePlayUrl);
+                        //const playUrl = replacestrings(chansList[i].detail.dashWidewinePlayUrl);
+                        const playUrl = replacestrings(`https://beta-ts-sable.vercel.app/index.mpd?id=${chansList[i].channelMeta.id}`);
+
                         m3uStr += playUrl + '\n\n';
 
                     }
